@@ -16,7 +16,7 @@ app.set('views', path.join(__dirname, 'public', 'views'));
  const adminRoutes = require('./routes/admin');
  const shopRoutes = require('./routes/shop');
 // const cartRoutes=require('./routes/cart',)
-
+const User=require('./models/user')
 // const Product=require('./models/product');
 // const User=require('./models/user');
 const { name } = require('ejs');
@@ -31,11 +31,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req,res,next)=>{
     
-    // User.findByPk(1).then(user=>{
-    //     req.user=user;
-        
+    User.findById('66816fb8b1e71d92cf4cbf45').then(user=>{
+        req.user=user;
         next();
-    //       }).catch(err=>console.log(err));
+        
+       
+          }).catch(err=>console.log(err));
+       
 })
 app.use('/admin', adminRoutes);
  app.use(shopRoutes);
