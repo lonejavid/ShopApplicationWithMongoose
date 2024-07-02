@@ -34,7 +34,7 @@ exports.getIndex = (req, res, next) => {
 exports.postCartDelete=(req,res)=>{
   const prodId=req.body.productId;
   console.log(prodId)
-  req.user.deleteItemFromCart(prodId).then(result=>{
+  req.user.removeFromCart(prodId).then(result=>{
     res.redirect('/cart')
 
   }).catch(err=>console.log(err))
