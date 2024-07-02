@@ -1,7 +1,7 @@
 const path = require('path');
 const express=require('express')
 
-const mongoConnect=require('./util/database').mongoConnect;
+const mongoose=require('mongoose')
 
 const bodyParser = require('body-parser');
 
@@ -15,7 +15,7 @@ app.set('views', path.join(__dirname, 'public', 'views'));
 
  const adminRoutes = require('./routes/admin');
  const shopRoutes = require('./routes/shop');
-const User=require('./models/user')
+//const User=require('./models/user')
 // const Product=require('./models/product');
 // const User=require('./models/user');
 const { name } = require('ejs');
@@ -28,16 +28,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-app.use((req,res,next)=>{
+// app.use((req,res,next)=>{
     
-    User.findById('66816fb8b1e71d92cf4cbf45').then(user=>{
-        req.user=new User(user.name,user.email,user.cart,user._id)
-        next();
+//     User.findById('66816fb8b1e71d92cf4cbf45').then(user=>{
+//         req.user=new User(user.name,user.email,user.cart,user._id)
+//         next();
         
        
-          }).catch(err=>console.log(err));
+//           }).catch(err=>console.log(err));
        
-})
+// })
 app.use('/admin', adminRoutes);
  app.use(shopRoutes);
 
@@ -50,8 +50,10 @@ app.use('/admin', adminRoutes);
 // Cart.belongsToMany(Product,{through:CartItem});
 // Product.belongsToMany(Cart,{through:CartItem});
 
-
-  mongoConnect(()=>{
-    
-    app.listen(3000);
-  });
+mongoose.connect('mongodb+srv://lonejavid:0123.qwe.@cluster0.mlw1j2c.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0').
+then(result=>{
+  app.listen(3000)
+  console.log("cnooected to mongodb")
+}).catch(err=>{
+  console.log(err)
+})
