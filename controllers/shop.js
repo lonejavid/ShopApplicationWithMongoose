@@ -1,6 +1,6 @@
 const Product = require('../models/product');
 
-
+const Order=require('../models/order')
 exports.getProducts = (req, res, next) => {
   Product.find().then(products=>{
     res.render('shop/product-list', {
@@ -75,23 +75,62 @@ exports.postCart=(req,res)=>{
 }
 
 
-exports.postOrder=(req,res,next)=>{
-  req.user.addOrder().then(result=>{
-    res.redirect('/orders')
-  })
-}
+
+exports.postOrder = (req, res, next) => {
+
+  req.user.populate('cart.items.productId')
+    .then(user => {
+      const products = user.cart.items.map(i=> {
+         return {quantity: i.quantity,product:{...i.productId._doc}}
+      })
+      //   product: {
+      //     _id: item.productId._id,  // Assuming productId has _id field
+      //     name: item.productId.name  
+      //   }
+      // });
+
+      // console.log(req.user)
+
+      const order = new Order({
+        user: {
+          name: req.user.name,
+          userId: req.user._id  // Assuming _id is the ObjectId of the user
+        },
+        products: products,
+        userId: req.user._id 
+      });
+      console.log("this order is to be saved to the database ",order)
+      console.log("the user is",req.user)
+
+      return order.save();
+    })
+    .then(result => {
+      return  req.user.clearCart()
+      
+    }).then(()=>{
+      res.redirect('/orders');
+    })
+    .catch(err => {
+      console.error('Error creating order:', err);
+      next(err);  // Pass error to error handling middleware
+    });
+};
 
 
 exports.getOrders = (req, res, next) => {
-  req.user.getOrders().then(orders=>{
-    res.render('shop/orders', {
-      path: '/orders',
-      pageTitle: 'Your Orders',
-      orders:orders
-    });
-
-  })
-  
+  req.user.getOrders()
+      .then(orders => {
+        console.log("orders are",orders)
+          res.render('shop/orders', {
+              path: '/orders',
+              pageTitle: 'Your Orders',
+              orders: orders
+          });
+      })
+      .catch(err => {
+          console.error('Error fetching orders:', err);
+          next(err);  // Pass error to error handling middleware
+      });
 };
 
 exports.getProduct=(req,res)=>{

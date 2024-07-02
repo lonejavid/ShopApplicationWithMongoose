@@ -59,6 +59,22 @@ userSchema.methods.removeFromCart=function(productId){
 
 }
 
+
+
+
+// Define a method to fetch orders for a user
+userSchema.methods.getOrders = function() {
+  // Assuming Order is your Mongoose model for orders
+  const Order = mongoose.model('Order');
+  return Order.find({ userId: this._id }).exec();  // Assuming userId is the field in Order referencing User
+};
+
+
+userSchema.methods.clearCart=function(){
+  this.cart={items:[]}
+  return this.save()
+}
+
 module.exports=mongoose.model('User',userSchema)
 
 
