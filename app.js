@@ -17,7 +17,7 @@ app.set('views', path.join(__dirname, 'public', 'views'));
  const shopRoutes = require('./routes/shop');
 //const User=require('./models/user')
 // const Product=require('./models/product');
-// const User=require('./models/user');
+ const User=require('./models/user');
 const { name } = require('ejs');
 // const Cart = require('./models/cart');
 // const CartItem=require('./models/CartItem')
@@ -28,16 +28,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-// app.use((req,res,next)=>{
+app.use((req,res,next)=>{
     
-//     User.findById('66816fb8b1e71d92cf4cbf45').then(user=>{
-//         req.user=new User(user.name,user.email,user.cart,user._id)
-//         next();
+    User.findById('6683aee6f8b5275cf501b9a5').then(user=>{
+        req.user=user
+        next();
         
        
-//           }).catch(err=>console.log(err));
+          }).catch(err=>console.log(err));
        
-// })
+})
 app.use('/admin', adminRoutes);
  app.use(shopRoutes);
 
@@ -52,6 +52,18 @@ app.use('/admin', adminRoutes);
 
 mongoose.connect('mongodb+srv://lonejavid:0123.qwe.@cluster0.mlw1j2c.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0').
 then(result=>{
+  User.findOne({ _id: '6683aee6f8b5275cf501b9a5' }).then(user=>{
+    if(!user){
+      const user=new User({
+        name:'lonejavid',
+        email:'lonejavid0739@gmail.com',
+        cart:{items:[]}
+      });
+      user.save()
+
+    }
+  })
+
   app.listen(3000)
   console.log("cnooected to mongodb")
 }).catch(err=>{

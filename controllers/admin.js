@@ -15,7 +15,9 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = parseInt(req.body.price);
   const description = req.body.description;
- const product=new Product({title:title,price:price,description:description,imageUrl:imageUrl})
+ const product=new Product({title:title,price:price,description:description,imageUrl:imageUrl,
+  userId:req.user
+ })
  product.save()
     .then(result => {
       console.log('Product inserted',result);
@@ -72,7 +74,7 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.postDelete = (req, res, next) => {
   const productId = req.body.productId;
-  Product.deleteById(productId)
+  Product.findByIdAndDelete(productId)
     .then(() => {
       res.redirect('/admin/products');
     })
@@ -80,8 +82,9 @@ exports.postDelete = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  Product.find().select('price -_id').populate('userId','name email')
     .then(products => {
+      console.log(products)
       res.render('admin/products', {
         prods: products,
         pageTitle: 'Admin Products',
