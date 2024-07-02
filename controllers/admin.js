@@ -82,7 +82,9 @@ exports.postDelete = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find().select('price -_id').populate('userId','name email')
+  Product.find()
+//   select('price -_id').
+//  populate('userId','name email')
     .then(products => {
       console.log(products)
       res.render('admin/products', {
